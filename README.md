@@ -10,23 +10,27 @@ TODO: Fix link whenever repo is approved to be moved to Github
 
 [![button](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://source.cloud.google.com/arsan-dev/terraform-folding-at-home&page=shell&tutorial=README.md)
 
+### Prerequisites
+* GCP Project to deploy to.
+* Optional: Existing network to deploy resources into.
 
 ### Configurable Parameters
 
-Parameter | Description 
---- | ---
-project | The project to deploy to. If not set, the default provider project is used
-region | Region for cloud resources
-zones | One or more zones for cloud resources. If not set, up to three zones in the region are used depending on number of instances
-create_network | Boolean to create a new network (Default is true)
-network | Network to deploy resources into
-subnetwork | Subnetwork to deploy resources into
-subnetwork_cidr | CIDR range of subnetwork (Default is 192.168.0.0/16)
-fah_worker_image | Docker image to use for Folding@home client
-fah_worker_count | Number of Folding@home clients or GCE instances
-fah_worker_type | Machine type to run Folding@home client on
-fah_team_id | Team id for Folding@home client
-fah_user_name | User name for Folding@home client
+Parameter | Description | Default
+--- | --- | ---
+project | Id of the GCP project to deploy to. | Default provider project.
+region | Region for cloud resources | 
+zones | One or more zones for cloud resources. | If not set, up to three zones in the region are used depending on number of instances
+create_network | Boolean to create a new network | true
+network | Network to deploy resources into. It is either: <br>1. Arbitrary Network name if create_network is set to true  <br>2. Existing network name if create_network is set to false | fah_network
+subnetwork | Subnetwork to deploy resources into It is either: <br>1. Arbitrary subnetwork name if create_network is set to true  <br>2. Existing subnetwork name if create_network is set to false | fah-subnetwork
+subnetwork_cidr | CIDR range of subnetwork | 192.168.0.0/16
+fah_worker_image | Docker image to use for Folding@home client | stefancrain/folding-at-home:latest
+fah_worker_count | Number of Folding@home clients or GCE instances | 3
+fah_worker_type | Machine type to run Folding@home client on | n2-highcpu-8
+fah_team_id | Team id for Folding@home client | 446
+fah_user_name | User name for Folding@home client | Anonymous
+
 
 ### Getting Started
 
