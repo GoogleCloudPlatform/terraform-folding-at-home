@@ -2,13 +2,11 @@
 
 Folding@home is simulating the dynamics of COVID-19 proteins to hunt for new therapeutic opportunities.
 This template is provided to easily run Folding@home on Google Cloud, and help increase number of simulations done.
-You can use this Terraform script to automatically deploy one or more Folding@home clients on GCP, which is described in this step-by-step codelab (TODO link). The template creates the instance template with the Folding@home binaries, a managed instance group to uniformly deploy as many clients as specified by user, network firewall rules, and a Cloud NAT gateway for internet access without requiring public IPs, all in an existing or newly created network as specified by user.
+You can use this Terraform script to automatically deploy one or more Folding@home clients on GCP. The template creates the instance template with the Folding@home binaries, a managed instance group to uniformly deploy as many clients as specified by user, network firewall rules, and a Cloud NAT gateway for internet access without requiring public IPs, all in an existing or newly created network as specified by user.
 
 This is not an officially supported Google product. Terraform templates for Folding@home are developer and community-supported. Please don't hesitate to open an issue or pull request.
 
-TODO: Fix link whenever repo is approved to be moved to Github
-
-[![button](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://source.cloud.google.com/arsan-dev/terraform-folding-at-home&page=shell&tutorial=README.md)
+[![button](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/terraform-folding-at-home&page=shell&tutorial=README.md)
 
 ### Prerequisites
 * GCP Project to deploy to.
@@ -22,7 +20,7 @@ project | Id of the GCP project to deploy to. | Default provider project.
 region | Region for cloud resources | 
 zones | One or more zones for cloud resources. | If not set, up to three zones in the region are used depending on number of instances
 create_network | Boolean to create a new network | true
-network | Network to deploy resources into. It is either: <br>1. Arbitrary Network name if create_network is set to true  <br>2. Existing network name if create_network is set to false | fah_network
+network | Network to deploy resources into. It is either: <br>1. Arbitrary network name if create_network is set to true  <br>2. Existing network name if create_network is set to false | fah-network
 subnetwork | Subnetwork to deploy resources into It is either: <br>1. Arbitrary subnetwork name if create_network is set to true  <br>2. Existing subnetwork name if create_network is set to false | fah-subnetwork
 subnetwork_cidr | CIDR range of subnetwork | 192.168.0.0/16
 fah_worker_image | Docker image to use for Folding@home client | stefancrain/folding-at-home:latest
