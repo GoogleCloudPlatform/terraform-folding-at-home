@@ -53,7 +53,7 @@ variable "fah_worker_count" {
 variable "fah_worker_type" {
   description = "Machine type of Folding@home client"
   type        = string
-  default     = "n2-highcpu-8"
+  default     = "n1-highcpu-8"
 }
 
 variable "network" {

@@ -25,7 +25,7 @@ subnetwork | Subnetwork to deploy resources into It is either: <br>1. Arbitrary 
 subnetwork_cidr | CIDR range of subnetwork | 192.168.0.0/16
 fah_worker_image | Docker image to use for Folding@home client | stefancrain/folding-at-home:latest
 fah_worker_count | Number of Folding@home clients or GCE instances | 3
-fah_worker_type | Machine type to run Folding@home client on | n2-highcpu-8
+fah_worker_type | Machine type to run Folding@home client on | n1-highcpu-8
 fah_team_id | Team id for Folding@home client | 446
 fah_user_name | User name for Folding@home client | Anonymous
 

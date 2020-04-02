@@ -23,6 +23,6 @@ fah_team_id      = "ENTER_FAH_TEAM_ID"
 fah_user_name    = "ENTER_USER_NAME"
 fah_worker_image = "ENTER_DOCKER_IMAGE"      # e.g. "stefancrain/folding-at-home:latest"
 fah_worker_count = "SET_NUMBER_OF_CLIENTS"   # e.g. 2
-fah_worker_type  = "SET_CLIENT_MACHINE_TYPE" # e.g. "n2-highcpu-8"
+fah_worker_type  = "SET_CLIENT_MACHINE_TYPE" # e.g. "n1-highcpu-8"
 
 
