@@ -9,24 +9,32 @@ This is not an officially supported Google product. Terraform templates for Fold
 [![button](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/terraform-folding-at-home&page=shell&tutorial=README.md)
 
 ### Prerequisites
-* GCP Project to deploy to.
+* GCP project to deploy to.
 * Optional: Existing network to deploy resources into.
+* Sufficient resource quota in your GCP project and in the region you intend to deploy to. We will deploy a fixed-size managed instance group (MIG) with preemptible VMs which can be terminated (and replaced) at any time, but run at much lower price than normal instances. We will attach GPUs on each VM for workload acceleration so we also need to make sure we have GPUs quota.
+  * Visit https://cloud.google.com/compute/quotas
+  * Under Location, search and select a location such as "us-east1"
+  * Under Metrics, search for "CPU" and select "CPUs" and "Preemptible CPUs". If you do not have Preemptible CPUs quota, Compute Engine will still use regular CPUs quota to launch preemptible VM instances.
+  * Under Metrics, search for "GPU" and select all GPUs except "Commmitted.." ones and the "...Virtual Workstation GPUs". If you do not have Preemptible GPUs quota, Compute Engine will still use regular GPU quotas to add GPUs to preemptible VM instances.
+  * This helps you determine (1) which GPU devices are most available and (1) how many spare CPU cores there are. Using this starting quota, you can now determine the upper bound of your MIG size (i.e. the number of VMs each running a Folding@home client) you can deploy, and whether you can attach GPUs (and which GPU device). For example, below is a screenshot of a newly created project with a starting quota in 'us-east1' region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a Preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 GPUs. If desired, you can request for more quota (including separate and additional quota for preemptible CPUs/GPUs), by selecting the specific quota(s), clicking on 'Edit Quotas', and entering the requested 'New quota limit'.
+
+![Compute Engine Quota Screenshot](./img/cpu_gpu_quota.png "Compute Engine region quota")
 
 ### Configurable Parameters
 
 Parameter | Description | Default
 --- | --- | ---
-project | Id of the GCP project to deploy to. | Default provider project.
+project | Id of the GCP project to deploy to |
 region | Region for cloud resources | 
-zones | One or more zones for cloud resources. | If not set, up to three zones in the region are used depending on number of instances
+zones | One or more zones for cloud resources. If not set, up to three zones in the region are used to distributed instances depending on number of instances.<br>**Note on GPU:** Not all zones support GPUs. If running with GPUs, you should specify explicit list of zones (available for you in your region) that support your selected GPU model. [See list of zones per GPU model](https://cloud.google.com/compute/docs/gpus/#gpus-list)
 create_network | Boolean to create a new network | true
 network | Network to deploy resources into. It is either: <br>1. Arbitrary network name if create_network is set to true  <br>2. Existing network name if create_network is set to false | fah-network
 subnetwork | Subnetwork to deploy resources into It is either: <br>1. Arbitrary subnetwork name if create_network is set to true  <br>2. Existing subnetwork name if create_network is set to false | fah-subnetwork
 subnetwork_cidr | CIDR range of subnetwork | 192.168.0.0/16
 fah_worker_image | Docker image to use for Folding@home client | stefancrain/folding-at-home:latest
 fah_worker_count | Number of Folding@home clients or GCE instances | 3
-fah_worker_type | Machine type to run Folding@home client on | n1-highcpu-8
-fah_team_id | Team id for Folding@home client | 446
+fah_worker_type | Machine type to run Folding@home client on.<br>**Note on GPU:** only general-purpose N1 machine types currently support GPUs | n1-highcpu-8
+fah_team_id | Team id for Folding@home client. Defaults to [F@h team Google or 446](https://stats.foldingathome.org/team/446) | 446
 fah_user_name | User name for Folding@home client | Anonymous
 
 
@@ -40,6 +48,7 @@ fah_user_name | User name for Folding@home client | Anonymous
 1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
 2. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired Folding@home settings. See [list of input parameters](#configurable-parameters) above.
 3. Initialize Terraform working directory and download plugins by running `terraform init`.
+4. Provide credentials to Terraform to be able to provision and manage resources in your project. See [adding credentials docs](https://www.terraform.io/docs/providers/google/guides/getting_started.html#adding-credentials) to supply a GCP service account key.
 
 #### Deploy Folding@home instances
 
