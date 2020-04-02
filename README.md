@@ -10,7 +10,7 @@ This is not an officially supported Google product. Terraform templates for Fold
 
 ### Prerequisites
 * GCP project to deploy to.
-* Sufficient CPU & GPU resource quota in your GCP project and in the region you intend to deploy to. See [Review project quota](#review-project-quota) below for instructions on who to determine your spare quota.
+* Sufficient CPU & GPU resource quota in your GCP project. See [Review project quota](#review-project-quota) below for instructions on who to determine amount of spare quota available.
 
 ### Configurable Parameters
 
@@ -29,9 +29,11 @@ fah_worker_type | Machine type to run Folding@home client on.<br>**Note on GPU:*
 fah_team_id | Team id for Folding@home client. Defaults to [F@h team Google or 446](https://stats.foldingathome.org/team/446) | 446
 fah_user_name | User name for Folding@home client | Anonymous
 
+<br>
+
 ### Review project quota
 
-Before proceeding, you need to ensure you have enough CPU & GPU spare quota. This template will deploy a fixed-size managed instance group (MIG) with preemptible VMs with GPUs attached for workload acceleration. Note that preemtible VMs can be terminated (and then replaced) at any time, but run at much lower price than normal instances.
+Before proceeding, you need to ensure you have enough CPU & GPU spare quota in your project, and specifically in the region you intend to deploy to. This template will deploy a fixed-size managed instance group (MIG) with preemptible VMs with GPUs attached for workload acceleration. Note that preemtible VMs can be terminated (and then replaced) at any time, but run at much lower price than normal instances.
 
   * Visit https://cloud.google.com/compute/quotas
   * Under Location, search and select a location such as "us-east1"
