@@ -18,7 +18,7 @@ This is not an officially supported Google product. Terraform templates for Fold
   * Under Metrics, search for "GPU" and select all GPUs except "Commmitted.." ones and the "...Virtual Workstation GPUs". If you do not have Preemptible GPUs quota, Compute Engine will still use regular GPU quotas to add GPUs to preemptible VM instances.
   * This helps you determine (1) which GPU devices are most available and (1) how many spare CPU cores there are. Using this starting quota, you can now determine the upper bound of your MIG size (i.e. the number of VMs each running a Folding@home client) you can deploy, and whether you can attach GPUs (and which GPU device). For example, below is a screenshot of a newly created project with a starting quota in 'us-east1' region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a Preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 GPUs. If desired, you can request for more quota (including separate and additional quota for preemptible CPUs/GPUs), by selecting the specific quota(s), clicking on 'Edit Quotas', and entering the requested 'New quota limit'.
 
-![Compute Engine Quota Screenshot](./img/cpu_gpu_quota.png "Compute Engine region quota")
+![Compute Engine Quota Screenshot](./img/cpu_gpu_quota.png)
 
 ### Configurable Parameters
 
@@ -36,7 +36,7 @@ fah_worker_count | Number of Folding@home clients or GCE instances | 3
 fah_worker_type | Machine type to run Folding@home client on.<br>**Note on GPU:** only general-purpose N1 machine types currently support GPUs | n1-highcpu-8
 fah_team_id | Team id for Folding@home client. Defaults to [F@h team Google or 446](https://stats.foldingathome.org/team/446) | 446
 fah_user_name | User name for Folding@home client | Anonymous
-
+<br>
 
 ### Getting Started
 
