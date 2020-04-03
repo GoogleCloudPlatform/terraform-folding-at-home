@@ -44,14 +44,32 @@ write_files:
     [Install]
     WantedBy=multi-user.target
 
+- path: /etc/systemd/system/cuda-vector-add.service
+  permissions: 0644
+  owner: root
+  content: |
+    [Unit]
+    Description=Run a CUDA Vector Addition Workload
+    Requires=cos-gpu-installer.service
+    After=cos-gpu-installer.service
+
+    [Service]
+    User=root
+    Type=oneshot
+    RemainAfterExit=true
+    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-cuda-test-script > /tmp/run_cuda_test.sh"
+    ExecStart=/bin/bash /tmp/run_cuda_test.sh
+    StandardOutput=journal+console
+    StandardError=journal+console
+
 - path: /etc/systemd/system/fah.service
   permissions: 0644
   owner: root
   content: |
     [Unit]
     Description=Folding at Home service
-    Requires=cos-gpu-installer.service
-    After=cos-gpu-installer.service
+    Requires=cos-gpu-installer.service gcr-online.target
+    After=cos-gpu-installer.service gcr-online.target
 
     [Service]
     User=root
