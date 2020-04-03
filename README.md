@@ -29,6 +29,7 @@ fah_worker_type | Machine type to run Folding@home client on.<br>**Note on GPU:*
 fah_worker_gpu | GPU model to attach to each machine running Folding@home client. Possible options: `nvidia-tesla-t4`, `nvidia-tesla-v100`, `nvidia-tesla-p100`, `nvidia-tesla-p4`, `nvidia-tesla-k80`.<br>Set to empty string "" for no GPU. | nvidia-tesla-t4
 fah_team_id | Team id for Folding@home client. Defaults to [F@h team Google or 446](https://stats.foldingathome.org/team/446) | 446
 fah_user_name | User name for Folding@home client | Anonymous
+fah_passkey | User passkey for Folding@home client. This is optional. More details [here](https://foldingathome.org/support/faq/points/passkey/) | *None*
 
 <br>
 
