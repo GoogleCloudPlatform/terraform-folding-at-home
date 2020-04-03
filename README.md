@@ -26,12 +26,13 @@ subnetwork_cidr | CIDR range of subnetwork | 192.168.0.0/16
 fah_worker_image | Docker image to use for Folding@home client | stefancrain/folding-at-home:latest
 fah_worker_count | Number of Folding@home clients or GCE instances | 3
 fah_worker_type | Machine type to run Folding@home client on.<br>**Note on GPU:** only general-purpose N1 machine types currently support GPUs | n1-highcpu-8
+fah_worker_gpu | GPU model to attach to each machine running Folding@home client. Possible options: `nvidia-tesla-t4`, `nvidia-tesla-v100`, `nvidia-tesla-p100`, `nvidia-tesla-p4`, `nvidia-tesla-k80`.<br>Set to empty string "" for no GPU. | nvidia-tesla-t4
 fah_team_id | Team id for Folding@home client. Defaults to [F@h team Google or 446](https://stats.foldingathome.org/team/446) | 446
 fah_user_name | User name for Folding@home client | Anonymous
 
 <br>
 
-### Review project quota
+### Review Project Quota
 
 Before proceeding, you need to ensure you have enough CPU & GPU spare quota in your project, and specifically in the region you intend to deploy to. This template will deploy a fixed-size managed instance group (MIG) with preemptible VMs with GPUs attached for workload acceleration. Note that preemtible VMs can be terminated (and then replaced) at any time, but run at much lower price than normal instances.
 
@@ -41,9 +42,10 @@ Before proceeding, you need to ensure you have enough CPU & GPU spare quota in y
   * Under Metrics, search for "GPU" and select all GPUs except "Commmitted.." ones and the "...Virtual Workstation GPUs". If you do not have Preemptible GPUs quota, Compute Engine will still use regular GPU quotas to add GPUs to preemptible VM instances.
   * You can now determine (1) which GPU models are available and (2) how many spare CPU cores there are for your project and your target region. This gives you maximum size MIG (i.e. the number of VMs each running a Folding@home client) you can deploy, and whether you can attach GPUs (and which GPU device). If desired, you can request for more quota (including separate and additional quota for preemptible CPUs/GPUs), by selecting the specific quota(s), clicking on 'Edit Quotas', and entering the requested 'New quota limit'.
 
-Below a screenshot of a newly created project with a starting quota in 'us-east1' region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 T4 GPUs. Here is the relevant parameters configuration in this example:
+Below a screenshot of a newly created project with a starting quota in 'us-east1' region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 T4 GPUs. Here are the relevant parameters in this example:
 * fah_worker_count = 4
 * fah_worker_type = h1-highcpu-8
+* fah_worker_gpu = nvidia-tesla-t4
 
 ![Compute Engine Quota Screenshot](./img/compute_engine_cpu_gpu_quota.png)
 
@@ -82,7 +84,15 @@ Once Terraform completes:
 3. View Folding@home container logs
   * Once logged in, retrieve container name via `docker ps`
   * Type `docker logs -tf [CONTAINER_NAME]` to tail the logs and confirm its operation
- 
+
+#### Cleanup
+
+To stop Folding@home client(s) and remove all provisioned resources, type and confirm:
+
+```shell
+$ terraform destroy
+```
+
 ### TODOs
 
 * Fix GPU passthrough. Example error: `No compute devices matched GPU #0 NVIDIA:7 TU104GL [Tesla T4].  You may need to update your graphics drivers.`

@@ -56,6 +56,12 @@ variable "fah_worker_type" {
   default     = "n1-highcpu-8"
 }
 
+variable "fah_worker_gpu" {
+  description = "GPU model to be used by each Folding@home client. Empty string for none"
+  type        = string
+  default     = "nvidia-tesla-t4"
+}
+
 variable "network" {
   description = "Network to create resources in"
   default = "fah-network"
