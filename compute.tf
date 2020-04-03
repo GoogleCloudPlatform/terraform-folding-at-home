@@ -20,13 +20,24 @@ data "google_compute_image" "image" {
   name    = reverse(split("/", module.gce-advanced-container.source_image))[0]
 }
 
+data "template_file" "cloud-config" {
+    template = file("${path.module}/assets/cloud-config.yaml")
+
+    vars = {
+        fah_worker_image = var.fah_worker_image
+        fah_user_name = var.fah_user_name
+        fah_passkey = var.fah_passkey
+        fah_team_id = var.fah_team_id
+    }
+}
+
 ####
 ## Locals
 ####
 locals {
   boot_disk = [
     {
-      source_image = data.google_compute_image.image.self_link 
+      source_image = data.google_compute_image.image.self_link
       disk_size_gb = "50"
       disk_type    = "pd-standard"
       auto_delete  = true
@@ -45,18 +56,6 @@ locals {
 module "gce-advanced-container" {
   source = "terraform-google-modules/container-vm/google"
   version = "~> 2.0.0"
-  container = {
-    gpus = "all"
-    image = var.fah_worker_image
-    args = [
-      "--user=${var.fah_user_name}",
-      "--team=${var.fah_team_id}",
-      "--power=full",
-      "--gpu-usage=100",
-      "--cpu-usage=100"
-    ]
-  }
-  restart_policy = "Always"
 }
 
 ####
@@ -72,7 +71,14 @@ resource "google_compute_instance_template" "mig_template" {
   labels                  = {
     "container-vm" = module.gce-advanced-container.vm_container_label
   }
-  metadata                = merge(var.additional_metadata, map("gce-container-declaration", module.gce-advanced-container.metadata_value))
+  metadata = merge(
+    var.additional_metadata,
+    map("cos-gpu-installer-env", file("${path.module}/cos-gpu-installer/scripts/gpu-installer-env")),
+    map("user-data", data.template_file.cloud-config.rendered),
+    map("run-installer-script", file("${path.module}/cos-gpu-installer/scripts/run_installer.sh")),
+    map("run-cuda-test-script", file("${path.module}/cos-gpu-installer/scripts/run_cuda_test.sh")),
+  )
+
   tags                    = ["fah-worker"]
 
   dynamic "disk" {

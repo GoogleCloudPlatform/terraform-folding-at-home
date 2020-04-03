@@ -1,0 +1,3 @@
+[submodule "cos-gpu-installer"]
+	path = cos-gpu-installer
+	url = https://github.com/GoogleCloudPlatform/cos-gpu-installer.git

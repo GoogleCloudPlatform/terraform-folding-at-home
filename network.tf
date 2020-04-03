@@ -75,7 +75,7 @@ resource "google_compute_firewall" "allow_iap" {
 
   allow {
     protocol = "tcp"
-    ports    = ["22"]
+    ports    = ["22", "7396"]
   }
 
   source_ranges = ["35.235.240.0/20"] # IAP's TCP forwarding IP addresses
