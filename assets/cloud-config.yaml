@@ -34,10 +34,10 @@ write_files:
     RemainAfterExit=true
     # The default stateful path to store user provided installer script and
     # provided environment variables.
-    Environment=STATEFUL_PATH=/var/lib/nvidia
-    ExecStartPre=/bin/mkdir -p $STATEFUL_PATH
-    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh $STATEFUL_PATH/run_installer.sh || true"
-    ExecStart=/bin/bash $STATEFUL_PATH/run_installer.sh
+
+    ExecStartPre=/bin/mkdir -p /var/lib/nvidia
+    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh /var/lib/nvidia/run_installer.sh || true"
+    ExecStart=/bin/bash /var/lib/nvidia/run_installer.sh
     StandardOutput=journal+console
     StandardError=journal+console
 
@@ -75,7 +75,7 @@ write_files:
     User=root
     ExecStart=/usr/bin/docker run \
       --name=fah \
-      --user 2000:2000 \
+      -p 7396:7396 \
       -v /var/lib/nvidia:/usr/local/nvidia \
       -e LD_LIBRARY_PATH=/usr/local/nvidia/lib64 \
       --device /dev/nvidia0 \
@@ -91,6 +91,7 @@ write_files:
       --cpu-usage=100 \
       --gpu=true
     ExecStop=/usr/bin/docker stop fah
+    ExecStopPost=/usr/bin/docker rm fah
     StandardOutput=journal+console
     StandardError=journal+console
 
