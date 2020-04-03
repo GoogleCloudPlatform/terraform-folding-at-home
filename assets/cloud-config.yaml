@@ -69,7 +69,7 @@ write_files:
     [Unit]
     Description=Folding at Home service
     Requires=cos-gpu-installer.service gcr-online.target
-    After=cos-gpu-installer.service gcr-online.target
+    After=cos-gpu-installer.service cuda-vector-add.service gcr-online.target
 
     [Service]
     User=root
@@ -100,6 +100,8 @@ write_files:
 runcmd:
   - systemctl daemon-reload
   - systemctl enable cos-gpu-installer.service
+  - systemctl enable cuda-vector-add.service
   - systemctl enable fah.service
   - systemctl start cos-gpu-installer.service
+  - systemctl start cuda-vector-add.service
   - systemctl start fah.service
