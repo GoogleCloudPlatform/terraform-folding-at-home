@@ -34,7 +34,7 @@ fah_user_name | User name for Folding@home client | Anonymous
 
 ### Review Project Quota
 
-Before proceeding, you need to ensure you have enough CPU & GPU spare quota in your project, and specifically in the region you intend to deploy to. This template will deploy a fixed-size managed instance group (MIG) with preemptible VMs with GPUs attached for workload acceleration. Note that preemtible VMs can be terminated (and then replaced) at any time, but run at much lower price than normal instances.
+Before proceeding, you need to ensure you have enough CPU & GPU spare quota in your project, and specifically in the region you intend to deploy to. This template will deploy a fixed-size managed instance group (MIG) with preemptible VMs with GPUs attached for workload acceleration. Note that preemtible VMs can be terminated (and then recreated by MIG) at any time, but run at much lower price than normal instances.
 
   * Visit https://cloud.google.com/compute/quotas
   * Under Location, search and select a location such as "us-east1"
