@@ -124,6 +124,7 @@ resource "google_compute_instance_template" "mig_template" {
 
   scheduling {
     preemptible = true
+    on_host_maintenance = "TERMINATE"
     automatic_restart = false
   }
 

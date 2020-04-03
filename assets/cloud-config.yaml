@@ -1,12 +1,12 @@
 #cloud-config
-
+#
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#    https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,88 +14,83 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-users:
-- name: fah
-  uid: 2000
-
 write_files:
-- path: /etc/systemd/system/cos-gpu-installer.service
-  permissions: 0644
-  owner: root
-  content: |
-    [Unit]
-    Description=Run the GPU driver installer container
-    Requires=network-online.target gcr-online.target
-    After=network-online.target gcr-online.target
+  - path: /etc/systemd/system/cos-gpu-installer.service
+    permissions: 0755
+    owner: root
+    content: |
+      [Unit]
+      Description=Run the GPU driver installer container
+      Requires=network-online.target gcr-online.target
+      After=network-online.target gcr-online.target
 
-    [Service]
-    User=root
-    Type=oneshot
-    RemainAfterExit=true
-    # The default stateful path to store user provided installer script and
-    # provided environment variables.
-    Environment=STATEFUL_PATH=/var/lib/nvidia
-    ExecStartPre=/bin/mkdir -p $STATEFUL_PATH
-    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh $STATEFUL_PATH/run_installer.sh || true"
-    ExecStart=/bin/bash $STATEFUL_PATH/run_installer.sh
-    StandardOutput=journal+console
-    StandardError=journal+console
+      [Service]
+      User=root
+      Type=oneshot
+      RemainAfterExit=true
+      Environment=SYSTEMD_LOG_LEVEL=debug
+      # The default stateful path to store user provided installer script and
+      # provided environment variables.
+      Environment=STATEFUL_PATH=/var/lib/nvidia
+      ExecStartPre=/bin/mkdir -p $STATEFUL_PATH
+      ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh $STATEFUL_PATH/run_installer.sh || true"
+      ExecStart=/bin/bash /var/lib/nvidia/run_installer.sh
+      StandardOutput=journal+console
+      StandardError=journal+console
 
-    [Install]
-    WantedBy=multi-user.target
+      [Install]
+      WantedBy=multi-user.target
 
-- path: /etc/systemd/system/cuda-vector-add.service
-  permissions: 0644
-  owner: root
-  content: |
-    [Unit]
-    Description=Run a CUDA Vector Addition Workload
-    Requires=cos-gpu-installer.service
-    After=cos-gpu-installer.service
+  - path: /etc/systemd/system/cuda-vector-add.service
+    permissions: 0755
+    owner: root
+    content: |
+      [Unit]
+      Description=Run a CUDA Vector Addition Workload
+      Requires=cos-gpu-installer.service
+      After=cos-gpu-installer.service
 
-    [Service]
-    User=root
-    Type=oneshot
-    RemainAfterExit=true
-    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-cuda-test-script > /tmp/run_cuda_test.sh"
-    ExecStart=/bin/bash /tmp/run_cuda_test.sh
-    StandardOutput=journal+console
-    StandardError=journal+console
+      [Service]
+      User=root
+      Type=oneshot
+      RemainAfterExit=true
+      ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-cuda-test-script > /tmp/run_cuda_test.sh"
+      ExecStart=/bin/bash /tmp/run_cuda_test.sh
+      StandardOutput=journal+console
+      StandardError=journal+console
 
-- path: /etc/systemd/system/fah.service
-  permissions: 0644
-  owner: root
-  content: |
-    [Unit]
-    Description=Folding at Home service
-    Requires=cos-gpu-installer.service gcr-online.target
-    After=cos-gpu-installer.service cuda-vector-add.service gcr-online.target
+  - path: /etc/systemd/system/fah.service
+    permissions: 0644
+    owner: root
+    content: |
+      [Unit]
+      Description=Folding at Home service
+      Requires=cos-gpu-installer.service gcr-online.target
+      After=cos-gpu-installer.service cuda-vector-add.service gcr-online.target
 
-    [Service]
-    User=root
-    ExecStart=/usr/bin/docker run \
-      --name=fah \
-      --user 2000:2000 \
-      -v /var/lib/nvidia:/usr/local/nvidia \
-      -e LD_LIBRARY_PATH=/usr/local/nvidia/lib64 \
-      --device /dev/nvidia0 \
-      --device /dev/nvidiactl \
-      --device /dev/nvidia-uvm \
-      --restart always \
-      ${fah_worker_image} \
-      --user=${fah_user_name} \
-      ${fah_passkey != "" ? "--passkey=${fah_passkey}" : "" } \
-      --team=${fah_team_id} \
-      --power=full \
-      --gpu-usage=100 \
-      --cpu-usage=100 \
-      --gpu=true
-    ExecStop=/usr/bin/docker stop fah
-    StandardOutput=journal+console
-    StandardError=journal+console
+      [Service]
+      User=root
+      ExecStart=/usr/bin/docker run \
+        --name=fah \
+        -v /var/lib/nvidia:/usr/local/nvidia \
+        -e LD_LIBRARY_PATH=/usr/local/nvidia/lib64 \
+        --device /dev/nvidia0 \
+        --device /dev/nvidiactl \
+        --device /dev/nvidia-uvm \
+        --restart always \
+        ${fah_worker_image} \
+        --user=${fah_user_name} ${fah_passkey != "" ? "--passkey=${fah_passkey} " : "" }\
+        --team=${fah_team_id} \
+        --power=full \
+        --gpu-usage=100 \
+        --cpu-usage=100 \
+        --gpu=true
+      ExecStop=/usr/bin/docker stop fah
+      StandardOutput=journal+console
+      StandardError=journal+console
 
-    [Install]
-    WantedBy=multi-user.target
+      [Install]
+      WantedBy=multi-user.target
 
 runcmd:
   - systemctl daemon-reload
