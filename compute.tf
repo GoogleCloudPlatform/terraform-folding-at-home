@@ -129,8 +129,8 @@ resource "google_compute_instance_template" "mig_template" {
   }
 
   guest_accelerator {
-    type = "nvidia-tesla-t4"
-    count = 1
+    type = var.fah_worker_gpu
+    count = trimspace(var.fah_worker_gpu) != "" ? 1 : 0
   }
 }
 
