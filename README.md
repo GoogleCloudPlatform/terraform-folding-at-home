@@ -1,7 +1,7 @@
-# Terraform Template for Folding@home on GCP
+# Terraform template for Folding@home on GCP
 
-Folding@home is simulating the dynamics of COVID-19 proteins to hunt for new therapeutic opportunities.
-This template is provided to easily run Folding@home on Google Cloud, and help increase number of simulations done.
+[Folding@home is simulating the dynamics of COVID-19 proteins](https://foldingathome.org/covid19/) to hunt for new therapeutic opportunities (recent updates from [Mar 10](https://foldingathome.org/2020/03/10/covid19-update/) and [Feb 27](https://foldingathome.org/2020/02/27/foldinghome-takes-up-the-fight-against-covid-19-2019-ncov/)).
+This template is provided to easily run Folding@home on Google Cloud, and help increase total number of simulations done.
 You can use this Terraform script to automatically deploy one or more Folding@home clients on GCP. The template creates the instance template with the Folding@home binaries, a managed instance group to uniformly deploy as many clients as specified by user, network firewall rules, and a Cloud NAT gateway for internet access without requiring public IPs, all in an existing or newly created network as specified by user.
 
 This is not an officially supported Google product. Terraform templates for Folding@home are developer and community-supported. Please don't hesitate to open an issue or pull request.
@@ -18,7 +18,7 @@ Parameter | Description | Default
 --- | --- | ---
 project | Id of the GCP project to deploy to |
 region | Region for cloud resources | 
-zones | One or more zones for cloud resources. If not set, up to three zones in the region are used to distributed instances depending on number of instances.<br>**Note on GPU:** Not all zones support GPUs. If running with GPUs, you should specify explicit list of zones (available for you in your region) that support your selected GPU model. [See list of zones per GPU model](https://cloud.google.com/compute/docs/gpus/#gpus-list)
+zones | One or more zones for cloud resources. If not set, up to three zones in the region are used to distributed instances depending on number of instances.<br>**Note on GPU:** Not all regions and zones support all GPUs. If running with GPUs, you should specify explicit list of zones (available for you in your region) that support your selected GPU model. [Refer to list of zones per GPU model](https://cloud.google.com/compute/docs/gpus/#gpus-list)
 create_network | Boolean to create a new network | true
 network | Network to deploy resources into. It is either: <br>1. Arbitrary network name if create_network is set to true  <br>2. Existing network name if create_network is set to false | fah-network
 subnetwork | Subnetwork to deploy resources into It is either: <br>1. Arbitrary subnetwork name if create_network is set to true  <br>2. Existing subnetwork name if create_network is set to false | fah-subnetwork
@@ -43,7 +43,7 @@ Before proceeding, you need to ensure you have enough CPU & GPU spare quota in y
   * Under Metrics, search for "GPU" and select all GPUs except "Commmitted.." ones and the "...Virtual Workstation GPUs". If you do not have Preemptible GPUs quota, Compute Engine will still use regular GPU quotas to add GPUs to preemptible VM instances.
   * You can now determine (1) which GPU models are available and (2) how many spare CPU cores there are for your project and your target region. This gives you maximum size MIG (i.e. the number of VMs each running a Folding@home client) you can deploy, and whether you can attach GPUs (and which GPU device). If desired, you can request for more quota (including separate and additional quota for preemptible CPUs/GPUs), by selecting the specific quota(s), clicking on 'Edit Quotas', and entering the requested 'New quota limit'.
 
-Below a screenshot of a newly created project with a starting quota in 'us-east1' region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 T4 GPUs. Here are the relevant parameters in this example:
+Below a screenshot of a newly created project with a starting quota in '"us-east1" region of 72 CPU cores and 4 Preemptible Nvidia T4 GPUs. In that case, one might opt with a MIG of size 4, where each worker node is a preemptible n1-highcpu-8 with a T4 GPU attached, so a total of 4*8=32 CPUs and 4 T4 GPUs. Here are the relevant parameters in this example:
 * fah_worker_count = 4
 * fah_worker_type = h1-highcpu-8
 * fah_worker_gpu = nvidia-tesla-t4
@@ -80,7 +80,7 @@ Once Terraform completes:
 
 2. Access one of the new instances via CLI.
   * First, make sure you have IAP SSH permissions for your instances by [following these instructions](https://cloud.google.com/nat/docs/gce-example#step_4_create_ssh_permissions_for_your_test_instance)
-  * Type `gcloud compute ssh [INSTANCE_NAME] --zone [INSTANCE_ZONE]` to SSH to the instance you took note previously. Since instances are created without external IP, this will default to using IAP access.
+  * Type `gcloud compute ssh [INSTANCE_NAME] --zone [INSTANCE_ZONE]` to SSH to the instance you took note previously. Since instances are created without external IP, this will default to using IAP tunnel.
 
 3. View Folding@home container logs
   * Once logged in, retrieve container name via `docker ps`
