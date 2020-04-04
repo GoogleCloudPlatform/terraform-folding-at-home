@@ -16,19 +16,19 @@
 ## Data Sources
 ####
 data "google_compute_image" "image" {
+  family = "cos-stable"
   project = "cos-cloud"
-  name    = reverse(split("/", module.gce-advanced-container.source_image))[0]
 }
 
 data "template_file" "cloud-config" {
-    template = file("${path.module}/assets/cloud-config.yaml")
+  template = file("${path.module}/assets/cloud-config.yaml")
 
-    vars = {
-        fah_worker_image = var.fah_worker_image
-        fah_user_name = var.fah_user_name
-        fah_passkey = var.fah_passkey
-        fah_team_id = var.fah_team_id
-    }
+  vars = {
+    fah_worker_image = var.fah_worker_image
+    fah_user_name = var.fah_user_name
+    fah_passkey = var.fah_passkey
+    fah_team_id = var.fah_team_id
+  }
 }
 
 ####
@@ -51,14 +51,6 @@ locals {
 }
 
 ####
-## Container VM
-####
-module "gce-advanced-container" {
-  source = "terraform-google-modules/container-vm/google"
-  version = "~> 2.0.0"
-}
-
-####
 ## Instance Template
 ####
 resource "google_compute_instance_template" "mig_template" {
@@ -69,8 +61,9 @@ resource "google_compute_instance_template" "mig_template" {
   metadata_startup_script = ""
 
   labels                  = {
-    "container-vm" = module.gce-advanced-container.vm_container_label
+    "container-vm" = data.google_compute_image.image.name
   }
+
   metadata = merge(
     var.additional_metadata,
     map("cos-gpu-installer-env", file("${path.module}/cos-gpu-installer/scripts/gpu-installer-env")),
@@ -104,6 +97,7 @@ resource "google_compute_instance_template" "mig_template" {
       }
     }
   }
+
   dynamic "service_account" {
     for_each = [var.service_account]
     content {
@@ -133,27 +127,6 @@ resource "google_compute_instance_template" "mig_template" {
     count = trimspace(var.fah_worker_gpu) != "" ? 1 : 0
   }
 }
-
-# module "mig_template" {
-#   source               = "terraform-google-modules/vm/google//modules/instance_template"
-#   version              = "~> 2.0.0"
-#   network              = var.create_network ? google_compute_network.default[0].self_link : var.network
-#   subnetwork           = var.create_network ? google_compute_subnetwork.default[0].self_link : var.subnetwork
-#   service_account      = var.service_account
-#   name_prefix          = var.network
-#   machine_type         = var.fah_worker_type
-#   preemptible          = true
-#   source_image_family  = "cos-stable"
-#   source_image_project = "cos-cloud"
-#   source_image         = reverse(split("/", module.gce-advanced-container.source_image))[0]
-#   metadata             = merge(var.additional_metadata, map("gce-container-declaration", module.gce-advanced-container.metadata_value))
-#   tags = [
-#     "fah-worker"
-#   ]
-#   labels = {
-#     "container-vm" = module.gce-advanced-container.vm_container_label
-#   }
-# }
 
 ####
 ## Managed Instance Group

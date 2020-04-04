@@ -96,8 +96,7 @@ $ terraform destroy
 
 ### TODOs
 
-* Fix GPU passthrough. Example error: `No compute devices matched GPU #0 NVIDIA:7 TU104GL [Tesla T4].  You may need to update your graphics drivers.`
-* Fix logging to Stackdriver for quick monitoring & troubleshooting
+* Add GPU usage logging to Stackdriver for quick monitoring & troubleshooting
 * Scale down to 1 when no jobs available
 * Scale down to 0 when no jobs available for extended time. Spin back up periodically.
 
