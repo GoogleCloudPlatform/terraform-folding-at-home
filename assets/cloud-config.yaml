@@ -24,18 +24,17 @@ write_files:
     Requires=network-online.target gcr-online.target
     After=network-online.target gcr-online.target
 
-  [Service]
-  User=root
-  Type=oneshot
-  RemainAfterExit=true
-  # The default stateful path to store user provided installer script and
-  # provided environment variables.
-
-  ExecStartPre=/bin/mkdir -p /var/lib/nvidia
-  ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh /var/lib/nvidia/run_installer.sh || true"
-  ExecStart=/bin/bash /var/lib/nvidia/run_installer.sh
-  StandardOutput=journal+console
-  StandardError=journal+console
+    [Service]
+    User=root
+    Type=oneshot
+    RemainAfterExit=true
+    # The default stateful path to store user provided installer script and
+    # provided environment variables.
+    ExecStartPre=/bin/mkdir -p /var/lib/nvidia
+    ExecStartPre=/bin/bash -c "/usr/share/google/get_metadata_value attributes/run-installer-script > /tmp/run_installer.sh && cp -f /tmp/run_installer.sh /var/lib/nvidia/run_installer.sh || true"
+    ExecStart=/bin/bash /var/lib/nvidia/run_installer.sh
+    StandardOutput=journal+console
+    StandardError=journal+console
 
     [Install]
     WantedBy=multi-user.target
@@ -79,7 +78,6 @@ write_files:
       --device /dev/nvidia-uvm \
       --restart always \
       ${fah_worker_image} \
-      --user=${fah_user_name} \
       --user=${fah_user_name} ${fah_passkey != "" ? "--passkey=${fah_passkey} " : "" }\
       --team=${fah_team_id} \
       --power=full \
