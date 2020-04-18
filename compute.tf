@@ -21,14 +21,17 @@ data "google_compute_image" "image" {
 }
 
 data "template_file" "cloud-config" {
-  template = file("${path.module}/assets/cloud-config.yaml")
-
   vars = {
     fah_worker_image = var.fah_worker_image
     fah_user_name = var.fah_user_name
     fah_passkey = var.fah_passkey
     fah_team_id = var.fah_team_id
+    fah_worker_gpu = var.fah_worker_gpu
   }
+
+  template = var.fah_worker_gpu != "" ? file("${path.module}/assets/cloud-config.yaml") : file("${path.module}/assets/cloud-config-no-gpu.yaml")
+
+  
 }
 
 ####
