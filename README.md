@@ -57,10 +57,11 @@ Below a screenshot of a newly created project with a starting quota in '"us-east
 
 #### Setup working directory
 
-1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
-2. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired Folding@home settings. See [list of input parameters](#configurable-parameters) above.
-3. Initialize Terraform working directory and download plugins by running `terraform init`.
-4. Provide credentials to Terraform to be able to provision and manage resources in your project. See [adding credentials docs](https://www.terraform.io/docs/providers/google/guides/getting_started.html#adding-credentials) to supply a GCP service account key.
+1. Run `git submodule init && git submodule init` after cloning to ensure cos-gpu-installer submodule is installed
+2. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
+3. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired Folding@home settings. See [list of input parameters](#configurable-parameters) above.
+4. Initialize Terraform working directory and download plugins by running `terraform init`.
+5. Provide credentials to Terraform to be able to provision and manage resources in your project. See [adding credentials docs](https://www.terraform.io/docs/providers/google/guides/getting_started.html#adding-credentials) to supply a GCP service account key.
 
 #### Deploy Folding@home instances
 
