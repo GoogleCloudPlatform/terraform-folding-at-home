@@ -57,7 +57,7 @@ Below a screenshot of a newly created project with a starting quota in '"us-east
 
 #### Setup working directory
 
-1. Run `git submodule init && git submodule init` after cloning to ensure cos-gpu-installer submodule is installed
+1. Run `git submodule init && git submodule update` after cloning to ensure cos-gpu-installer submodule is installed
 2. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
 3. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired Folding@home settings. See [list of input parameters](#configurable-parameters) above.
 4. Initialize Terraform working directory and download plugins by running `terraform init`.
